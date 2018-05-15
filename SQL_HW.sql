@@ -121,10 +121,11 @@ ON (fa.film_id = f.film_id)
 GROUP BY title;
 
 #6d. How many copies of the film Hunchback Impossible exist in the inventory system?
-SELECT * FROM inventory;
 SELECT * FROM film;
+SELECT * FROM inventory;
 
-SELECT title , COUNT(i.film_id)
+SELECT title 
+COUNT(i.film_id)
 FROM film f
 JOIN inventory i
 ON (f.film_id = i.film_id)
@@ -143,121 +144,95 @@ GROUP BY p.customer_id
 ORDER BY last_name;
 
 #7a. The music of Queen and Kris Kristofferson have seen an unlikely resurgence. As an unintended consequence, 
-#films starting with the letters K and Q have also soared in popularity. Use subqueries to display the titles of movies starting with the letters K and Q whose language is English.
+#films starting with the letters K and Q have also soared in popularity. Use subqueries to display the titles 
+#of movies starting with the letters K and Q whose language is English.
 SELECT * from film;
-SELECT * from language;
-
-SELECT title
+SELECT title 
 FROM film
-WHERE title like 'K%' or 'Q%' -- STILL NEED TO FIGURE THIS OUT :(
-AND language_id in
-(
+WHERE title like '[K]','[Q]',
+AND language_id in(
  SELECT language_id
  FROM language
- WHERE name = 'English'
- );
+ WHERE name = 'English');
  
-#7b. Use subqueries to display all actors who appear in the film Alone Trip.
+#7b. Use subqueries to display all actors who appear in the film 'Alone Trip'.
 SELECT * FROM actor;
-SELECT * FROM film_actor;
-SELECT * FROM film;
-
 SELECT first_name, last_name
 FROM actor
-WHERE actor_id IN
-(
- SELECT actor_id
- FROM film_actor
- WHERE film_id IN
-  (
-   SELECT film_id
-   FROM film
-   WHERE title = 'Alone Trip'
-   )
-);
+WHERE actor_id IN (
+	SELECT actor_id
+    FROM film_actor
+    WHERE film_id (
+		WHERE title = 'Alone Trip')
+					);
 
-#7c. You want to run an email marketing campaign in Canada, for which you will need the names and email addresses of all Canadian customers. 
+#7c. You want to run an email marketing campaign in Canada, for which you 
+#will need the names and email addresses of all Canadian customers. 
 #Use joins to retrieve this information.
-SELECT * FROM customer;
-SELECT * FROM address;
-SELECT * FROM city;
-SELECT * FROM country;
-
-SELECT first_name, last_name, email
+SELECT email
 FROM customer
-WHERE address_id IN
-(
- SELECT address_id
- FROM address
- WHERE city_id IN
- (
-  SELECT city_id
-  FROM city
-  WHERE country_id IN
-  (
-   SELECT country_id
-   FROM country
-   WHERE country = 'Canada'
-  )
- )
-);
+WHERE customer_id IN (
+	SELECT country_id
+    FROM country
+    WHERE country = 'Canada'); /*Why does it give me one output*/
 
-#7d. Sales have been lagging among young families, and you wish to target all family movies for a promotion. Identify all movies categorized as famiy films.
-SELECT * FROM film;
-SELECT * FROM film_category;
-SELECT * FROM category;
-
+#7d. Sales have been lagging among young families, and you wish to target all family movies for a promotion. 
+#Identify all movies categorized as famiy films.
 SELECT title
 FROM film
-WHERE film_id IN
-(
- SELECT film_id 
- FROM film_category
- WHERE category_id IN
- (
-  SELECT category_id
-  FROM category
-  WHERE name = 'Family'
- )
-);
+WHERE film_id IN 
+	(
+	SELECT film_id
+	FROM film_category
+    WHERE category_id IN 
+		(
+		SELECT category_id
+        FROM category
+        WHERE name = 'Family'
+        )
+	);
 
 #7e. Display the most frequently rented movies in descending order.
 SELECT * FROM rental;
 SELECT * FROM inventory;
-SELECT * FROM film;
 
-SELECT title, 
-FROM film
-WHERE film_id IN
-(
- SELECT film_id
- FROM inventory
- WHERE inventory_id IN
-);
+FROM rental
+SELECT movie
+GROUP BY movie
+ORDER BY rent_count desc; /*Not sure if I did it correctly, didnt get an error*/
 
 #7f. Write a query to display how much business, in dollars, each store brought in.
-SELECT * FROM store;
-SELECT * FROM staff;
 SELECT * FROM payment;
+SELECT * FROM store;
 
-SELECT count(amount)
+SELECT sum(amount)
 FROM payment
-WHERE staff_id IN
-(
- SELECT staff_id
- FROM staff
- WHERE store_id IN
- (
-  SELECT store_id
-  FROM store
- ) 
-);
+WHERE payment_id IN 
+	(
+    SELECT amount
+    FROM payment
+    WHERE store_id
+    )
+GROUP BY store_id; /*Not sure what I am missing, not getting the amount total*/
 
 #7g. Write a query to display for each store its store ID, city, and country.
 SELECT * FROM store;
+SELECT * FROM city;
+SELECT * FROM country;
+
+SELECT store_id, city, country
+FROM store, city, country
+WHERE store_id = store_id AND
+	city_id = city_id AND
+    country_id = country_id; /*Not sure what I am missing, not getting the output*/
 
 #7h. List the top five genres in gross revenue in descending order. 
 #(Hint: you may need to use the following tables: category, film_category, inventory, payment, and rental.)
+SELECT category, film_category, inventory, payment, rental
+FROM /*Not sure what I need here*/
+GROUP BY film_category
+ORDER BY film_category desc;
+
 
 #8a. In your new role as an executive, you would like to have an easy way of viewing the Top five genres by gross revenue. 
 #Use the solution from the problem above to create a view. If you haven't solved 7h, you can substitute another query to create a view.
